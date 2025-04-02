@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useProjects } from "@/context/ProjectContext";
@@ -17,6 +18,8 @@ import {
 import { format, parseISO, startOfDay, addDays, isBefore, isAfter, isToday, differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import { Task, Sprint } from "@/types";
+import { ChartContainer, ChartTooltipContent, ChartLegendContent } from "@/components/ui/chart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BurndownDataPoint {
   date: string;
@@ -305,10 +308,25 @@ const BurndownChart: React.FC = () => {
   
   if (isLoading) {
     return (
-      <div className="text-center py-12 opacity-100 transition-opacity duration-300">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="h-12 w-12 rounded-full border-4 border-scrum-accent border-t-transparent animate-spin"></div>
-          <p className="text-scrum-text-secondary">Loading burndown chart data...</p>
+      <div className="animate-fade-in">
+        <div className="scrum-card mb-6">
+          <h2 className="text-xl font-bold mb-2">Project Burndown Chart</h2>
+          <p className="text-scrum-text-secondary">
+            Loading chart data...
+          </p>
+        </div>
+        
+        <div className="scrum-card h-[500px]">
+          <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+            <div className="w-full space-y-2">
+              <Skeleton className="h-8 w-3/4 mx-auto" />
+              <Skeleton className="h-[400px] w-full" />
+              <div className="flex justify-center gap-4 mt-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -316,7 +334,7 @@ const BurndownChart: React.FC = () => {
   
   if (projectSprints.length === 0) {
     return (
-      <div className="text-center py-12 bg-scrum-card border border-scrum-border rounded-lg">
+      <div className="text-center py-12 bg-scrum-card border border-scrum-border rounded-lg animate-fade-in">
         <h2 className="text-xl font-bold mb-4">Project Burndown Chart</h2>
         <p className="text-scrum-text-secondary mb-4">
           No sprints available. Create sprints to view the burndown chart.
@@ -327,7 +345,7 @@ const BurndownChart: React.FC = () => {
   
   if (chartData.length === 0) {
     return (
-      <div className="text-center py-12 bg-scrum-card border border-scrum-border rounded-lg">
+      <div className="text-center py-12 bg-scrum-card border border-scrum-border rounded-lg animate-fade-in">
         <h2 className="text-xl font-bold mb-4">Project Burndown Chart</h2>
         <p className="text-scrum-text-secondary mb-4">
           Unable to generate burndown chart. Make sure your sprints have tasks with story points.
@@ -346,9 +364,14 @@ const BurndownChart: React.FC = () => {
   const lastActualIndex = chartData.reduce((lastIdx, point, idx) => {
     return point.actual !== null ? idx : lastIdx;
   }, -1);
+
+  const config = {
+    ideal: { color: "hsl(var(--scrum-chart-line-1))", label: "Ideal Burndown" },
+    actual: { color: "hsl(var(--scrum-chart-line-2))", label: "Actual Burndown" }
+  };
   
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="scrum-card mb-6">
         <h2 className="text-xl font-bold mb-2">Project Burndown Chart</h2>
         <p className="text-scrum-text-secondary">
@@ -356,8 +379,8 @@ const BurndownChart: React.FC = () => {
         </p>
       </div>
       
-      <div className="scrum-card h-[500px] opacity-100 transition-opacity duration-500">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="scrum-card h-[500px]">
+        <ChartContainer config={config} className="w-full h-full">
           <LineChart
             data={chartData}
             margin={{
@@ -386,36 +409,13 @@ const BurndownChart: React.FC = () => {
               axisLine={{ stroke: "hsl(var(--scrum-chart-grid))" }}
             />
             <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const idealValue = payload[0]?.value !== undefined ? payload[0].value : null;
-                  const actualValue = payload.length > 1 && payload[1]?.value !== undefined ? payload[1].value : null;
-                  
-                  return (
-                    <div className="bg-scrum-card border border-scrum-border p-3 rounded">
-                      <p className="font-medium">{payload[0]?.payload?.formattedDate || ""}</p>
-                      <div className="mt-2 space-y-1">
-                        {idealValue !== null && (
-                          <p className="flex items-center text-sm">
-                            <span className="h-2 w-2 rounded-full bg-[hsl(var(--scrum-chart-line-1))] mr-2"></span>
-                            <span>Ideal: {idealValue} points</span>
-                          </p>
-                        )}
-                        {actualValue !== null && (
-                          <p className="flex items-center text-sm">
-                            <span className="h-2 w-2 rounded-full bg-[hsl(var(--scrum-chart-line-2))] mr-2"></span>
-                            <span>Actual: {actualValue} points</span>
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
+              content={props => (
+                <ChartTooltipContent {...props} nameKey="dataKey" indicator="dot" />
+              )}
             />
-            <Legend
-              wrapperStyle={{ color: "inherit" }}
+            <Legend 
+              content={props => <ChartLegendContent {...props} />}
+              verticalAlign="bottom"
             />
             {todayLabel && (
               <ReferenceLine 
@@ -437,7 +437,7 @@ const BurndownChart: React.FC = () => {
               dataKey="ideal"
               stroke="hsl(var(--scrum-chart-line-1))"
               strokeWidth={2}
-              name="Ideal Burndown"
+              name="ideal"
               dot={false}
               activeDot={{ r: 8 }}
             />
@@ -446,7 +446,7 @@ const BurndownChart: React.FC = () => {
               dataKey="actual"
               stroke="hsl(var(--scrum-chart-line-2))"
               strokeWidth={2}
-              name="Actual Burndown"
+              name="actual"
               dot={(props) => {
                 const { cx, cy, payload, index } = props;
                 if (!payload || payload.actual === null || payload.actual === undefined) return null;
@@ -465,7 +465,7 @@ const BurndownChart: React.FC = () => {
               connectNulls={false}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
       
       <div className="scrum-card mt-6 p-4">
