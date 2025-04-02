@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useProjects } from "@/context/ProjectContext";
@@ -14,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
+  TooltipProps,
 } from "recharts";
 import { format, parseISO, startOfDay, addDays, isBefore, isAfter, isToday, differenceInDays } from "date-fns";
 import { toast } from "sonner";
@@ -409,12 +409,16 @@ const BurndownChart: React.FC = () => {
               axisLine={{ stroke: "hsl(var(--scrum-chart-grid))" }}
             />
             <Tooltip
-              content={props => (
-                <ChartTooltipContent {...props} nameKey="dataKey" indicator="dot" />
+              content={(props) => (
+                <ChartTooltipContent
+                  {...props}
+                  nameKey="dataKey"
+                  indicator="dot"
+                />
               )}
             />
-            <Legend 
-              content={props => <ChartLegendContent {...props} />}
+            <Legend
+              content={(props) => <ChartLegendContent {...props} />}
               verticalAlign="bottom"
             />
             {todayLabel && (
