@@ -409,16 +409,24 @@ const BurndownChart: React.FC = () => {
               axisLine={{ stroke: "hsl(var(--scrum-chart-grid))" }}
             />
             <Tooltip
-              content={(props) => (
-                <ChartTooltipContent
-                  {...props}
-                  nameKey="dataKey"
-                  indicator="dot"
-                />
-              )}
+              content={
+                (props) => {
+                  return React.createElement(ChartTooltipContent as any, {
+                    ...props,
+                    nameKey: "dataKey",
+                    indicator: "dot"
+                  });
+                }
+              }
             />
             <Legend
-              content={(props) => <ChartLegendContent {...props} />}
+              content={
+                (props) => {
+                  return React.createElement(ChartLegendContent as any, {
+                    ...props
+                  });
+                }
+              }
               verticalAlign="bottom"
             />
             {todayLabel && (
