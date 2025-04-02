@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+    
+    /* Scrum-specific light mode with improved contrast */
+    --scrum-background: 0 0% 96%;
+    --scrum-card: 0 0% 100%;
+    --scrum-border: 240 6% 80%;
+    --scrum-accent: 220 70% 50%;  /* Blue for better visibility */
+    --scrum-highlight: 220 70% 40%;  /* Darker blue for hover state */
+    --scrum-text-primary: 240 10% 10%;
+    --scrum-text-secondary: 240 3.8% 40%;
+    --scrum-chart-grid: 0 0% 85%;
+    --scrum-chart-axis: 0 0% 45%;
+    --scrum-chart-line-1: 235 80% 50%;
+    --scrum-chart-line-2: 145 63% 42%;
+    --scrum-chart-reference: 354 70% 54%;
+  }
+
+  .dark {
+    --background: 0 0% 6%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 18%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.9%;
+    
+    /* Scrum-specific dark mode */
+    --scrum-background: 0 0% 6%;
+    --scrum-card: 0 0% 12%;
+    --scrum-border: 0 0% 18%;
+    --scrum-accent: 220 70% 50%;  /* Same blue for consistency */
+    --scrum-highlight: 220 70% 60%;  /* Lighter blue for hover in dark mode */
+    --scrum-text-primary: 0 0% 98%;
+    --scrum-text-secondary: 0 0% 70%;
+    --scrum-chart-grid: 0 0% 25%;
+    --scrum-chart-axis: 0 0% 45%;
+    --scrum-chart-line-1: 235 80% 70%;
+    --scrum-chart-line-2: 145 63% 50%;
+    --scrum-chart-reference: 354 70% 64%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-color: hsl(var(--scrum-background));
+    font-feature-settings: "ss01";
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-scrum-card;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-scrum-accent rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-scrum-highlight;
+  }
+}
+
+@layer components {
+  .scrum-card {
+    @apply bg-scrum-card rounded-md border border-scrum-border p-4 transition-all duration-200;
+  }
+  
+  .scrum-button {
+    @apply bg-black text-white hover:bg-opacity-90 dark:bg-scrum-accent dark:text-white dark:hover:bg-scrum-highlight py-2 px-4 rounded-md transition-all duration-200 font-medium;
+  }
+  
+  .scrum-button-secondary {
+    @apply bg-scrum-accent text-white hover:bg-scrum-highlight py-2 px-4 rounded-md transition-all duration-200;
+  }
+
+  .scrum-input {
+    @apply bg-scrum-card border border-scrum-border text-foreground rounded-md py-2 px-4 w-full focus:outline-none focus:ring-1 focus:ring-scrum-highlight;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-md transition-all duration-200 flex items-center gap-2;
+  }
+
+  .nav-link.active {
+    @apply bg-scrum-accent text-white;
+  }
+  
+  .nav-link:not(.active) {
+    @apply text-scrum-text-secondary hover:bg-scrum-accent hover:bg-opacity-30;
+  }
+}
+
+.saturate-on-hover {
+  filter: saturate(0.8);
+  transition: filter 0.3s ease;
+}
+
+.saturate-on-hover:hover {
+  filter: saturate(1.2);
+}
+
+/* Custom animations for chat */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
