@@ -133,7 +133,6 @@ const BurndownChart: React.FC = () => {
       const burndownData = await generateBurndownData();
       setChartData(burndownData);
       
-      // Only save if we have data to save
       if (burndownData.length > 0) {
         const saved = await upsertBurndownData(projectId, user.id, burndownData);
         if (!saved) {
@@ -159,14 +158,12 @@ const BurndownChart: React.FC = () => {
       return [];
     }
     
-    // Get all tasks for this project
     const projectTasks: Task[] = [];
     for (const sprint of projectSprints) {
       const sprintTasks = getTasksBySprint(sprint.id);
       projectTasks.push(...sprintTasks);
     }
     
-    // Filter tasks that have story points
     const tasksWithPoints = projectTasks.filter(task => 
       task.storyPoints !== undefined && task.storyPoints > 0
     );
@@ -198,7 +195,6 @@ const BurndownChart: React.FC = () => {
     const daysInProject = differenceInDays(latestEndDate, earliestStartDate) + 1;
     const timeframeDays = Math.max(daysInProject, 7);
     
-    // Calculate total story points across all tasks
     const totalStoryPoints = tasksWithPoints.reduce((sum, task) => 
       sum + (task.storyPoints || 0), 0
     );
@@ -207,7 +203,6 @@ const BurndownChart: React.FC = () => {
       return [];
     }
     
-    // Group completed tasks by completion date - use a Map for data consistency
     const completedTasksByDate = new Map<string, Task[]>();
     tasksWithPoints.forEach(task => {
       if (task.status === 'done' && task.completionDate) {
@@ -222,10 +217,8 @@ const BurndownChart: React.FC = () => {
       }
     });
     
-    // Ensure we don't have duplicate dates in the final array
     const uniqueData = new Map<string, BurndownDataPoint>();
     
-    // Create the ideal burndown line based on even distribution of work
     let remainingPoints = totalStoryPoints;
     const pointsPerDay = totalStoryPoints / timeframeDays;
     
@@ -234,17 +227,13 @@ const BurndownChart: React.FC = () => {
       const dateStr = date.toISOString().split('T')[0];
       const formattedDate = format(date, "MMM dd");
       
-      // Calculate ideal burndown (theoretical perfect progress)
       const idealRemaining = Math.max(0, totalStoryPoints - (i * pointsPerDay));
       
-      // Calculate actual burndown based on task completion dates
       let actualPoints: number | null = null;
       
       if (isBefore(date, today) || isToday(date)) {
-        // Start with all points and subtract completed tasks up to this date
         let completedPoints = 0;
         
-        // Check all past dates up to and including current date
         for (let j = 0; j <= i; j++) {
           const checkDate = addDays(earliestStartDate, j);
           const checkDateStr = checkDate.toISOString().split('T')[0];
@@ -317,13 +306,62 @@ const BurndownChart: React.FC = () => {
         </div>
         
         <div className="scrum-card h-[500px]">
-          <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-            <div className="w-full space-y-2">
-              <Skeleton className="h-8 w-3/4 mx-auto" />
-              <Skeleton className="h-[400px] w-full" />
-              <div className="flex justify-center gap-4 mt-4">
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-24" />
+          <div className="w-full h-full flex flex-col items-center justify-center p-6">
+            <div className="w-full h-full flex flex-col">
+              <div className="flex justify-between mb-4">
+                <Skeleton className="h-5 w-32" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-5 w-16" />
+                </div>
+              </div>
+              
+              <div className="flex-1 w-full relative">
+                <div className="absolute inset-0 grid grid-cols-6 grid-rows-5 gap-y-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={`h-line-${i}`} className="col-span-6 border-t border-scrum-border opacity-30" />
+                  ))}
+                  
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <div 
+                      key={`v-line-${i}`} 
+                      className="row-span-5 border-l border-scrum-border opacity-30"
+                      style={{gridColumnStart: i+1}} 
+                    />
+                  ))}
+                </div>
+                
+                <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between py-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={`y-${i}`} className="h-4 w-8" />
+                  ))}
+                </div>
+                
+                <div className="absolute left-10 right-0 bottom-0 flex justify-between pb-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={`x-${i}`} className="h-4 w-16" />
+                  ))}
+                </div>
+                
+                <div className="absolute inset-0 pt-8 pb-8 px-12">
+                  <Skeleton className="h-1.5 w-full transform -rotate-12 origin-top-left mt-4" />
+                  
+                  <div className="relative h-full">
+                    <Skeleton className="h-1.5 w-3/4 absolute top-1/4 transform -rotate-6 origin-left" />
+                    <Skeleton className="h-1.5 w-1/2 absolute top-1/2 transform -rotate-3 origin-left" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-center gap-8 mt-6">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-3 w-3 rounded-sm" />
+                  <Skeleton className="h-5 w-24" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-3 w-3 rounded-sm" />
+                  <Skeleton className="h-5 w-24" />
+                </div>
               </div>
             </div>
           </div>
