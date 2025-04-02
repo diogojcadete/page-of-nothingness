@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -170,4 +171,18 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease forwards;
+}
+
+/* New subtle pulse animation for skeletons */
+@keyframes pulseSubtle {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
 }

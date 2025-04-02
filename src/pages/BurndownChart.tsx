@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useProjects } from "@/context/ProjectContext";
@@ -319,13 +320,13 @@ const BurndownChart: React.FC = () => {
               <div className="flex-1 w-full relative">
                 <div className="absolute inset-0 grid grid-cols-6 grid-rows-5 gap-y-4">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={`h-line-${i}`} className="col-span-6 border-t border-scrum-border opacity-30" />
+                    <div key={`h-line-${i}`} className="col-span-6 border-t border-scrum-border opacity-20" />
                   ))}
                   
                   {Array.from({ length: 7 }).map((_, i) => (
                     <div 
                       key={`v-line-${i}`} 
-                      className="row-span-5 border-l border-scrum-border opacity-30"
+                      className="row-span-5 border-l border-scrum-border opacity-20"
                       style={{gridColumnStart: i+1}} 
                     />
                   ))}
@@ -333,34 +334,36 @@ const BurndownChart: React.FC = () => {
                 
                 <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between py-2">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={`y-${i}`} className="h-4 w-8" />
+                    <Skeleton key={`y-${i}`} className="h-4 w-8 opacity-70" />
                   ))}
                 </div>
                 
                 <div className="absolute left-10 right-0 bottom-0 flex justify-between pb-2">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <Skeleton key={`x-${i}`} className="h-4 w-16" />
+                    <Skeleton key={`x-${i}`} className="h-4 w-12 opacity-70" />
                   ))}
                 </div>
                 
                 <div className="absolute inset-0 pt-8 pb-8 px-12">
-                  <Skeleton className="h-1.5 w-full transform -rotate-12 origin-top-left mt-4" />
+                  {/* Ideal line */}
+                  <div className="h-1 w-full bg-scrum-border opacity-70 transform -rotate-12 origin-top-left mt-4 rounded-full"></div>
                   
+                  {/* Actual line segments with subtle variations */}
                   <div className="relative h-full">
-                    <Skeleton className="h-1.5 w-3/4 absolute top-1/4 transform -rotate-6 origin-left" />
-                    <Skeleton className="h-1.5 w-1/2 absolute top-1/2 transform -rotate-3 origin-left" />
+                    <div className="h-1 w-3/4 bg-scrum-chart-line-2 opacity-30 absolute top-1/4 transform -rotate-6 origin-left rounded-full"></div>
+                    <div className="h-1 w-1/2 bg-scrum-chart-line-2 opacity-30 absolute top-1/2 transform -rotate-3 origin-left rounded-full"></div>
                   </div>
                 </div>
               </div>
               
               <div className="flex justify-center gap-8 mt-6">
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-3 w-3 rounded-sm" />
-                  <Skeleton className="h-5 w-24" />
+                  <div className="h-3 w-3 rounded-sm bg-scrum-chart-line-1 opacity-70"></div>
+                  <Skeleton className="h-5 w-24 opacity-70" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-3 w-3 rounded-sm" />
-                  <Skeleton className="h-5 w-24" />
+                  <div className="h-3 w-3 rounded-sm bg-scrum-chart-line-2 opacity-70"></div>
+                  <Skeleton className="h-5 w-24 opacity-70" />
                 </div>
               </div>
             </div>
